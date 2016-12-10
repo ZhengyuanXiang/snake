@@ -2,6 +2,7 @@
 #include <wiringPi.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int _din = 1;
 int _sclk = 0;
@@ -22,7 +23,7 @@ int main (void)
     LCDInit(_sclk, _din, _dc, _cs, _rst, contrast);
     LCDclear();
 
-    LCDfillrect(100, 100, 2, 2);
+    LCDfillrect(100, 100, 2, 2, BLACK);
     LCDdisplay();
     delay(111000);
 }
