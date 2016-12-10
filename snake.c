@@ -24,4 +24,5 @@ int main (void)
 
     LCDfillrect(100, 100, 2, 2);
     LCDdisplay();
+    delay(111000);
 }
