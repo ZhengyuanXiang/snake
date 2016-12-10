@@ -9,6 +9,10 @@
 #define INIT_LEN 8
 #define BLOCK_SIZE 2
 
+#define TTY_PATH    "/dev/tty" 
+#define STTY_US    "stty raw -echo -F " 
+#define STTY_DEF    "stty -raw echo -F " 
+
 enum Direction
 {
     UP = 0,
@@ -53,7 +57,6 @@ void init_snake(uint8_t PosX, uint8_t PosY)
     }
     for (tmp = head->next; tmp != head; tmp = tmp->next)
     {
-        printf("tmp x=%d y=%d\n", tmp->x, tmp->y);
         LCDfillrect(tmp->x, tmp->y, BLOCK_SIZE, BLOCK_SIZE, BLACK);
     }
 }
@@ -62,7 +65,6 @@ void move(char direct)
 {
     Body *tmp; 
     int x, y;
-    printf("white x=%d y=%d\n", head->pre->x, head->pre->y);
     LCDfillrect(head->pre->x, head->pre->y, BLOCK_SIZE, BLOCK_SIZE, WHITE);
     x = head->next->x;
     y = head->next->y;
@@ -92,13 +94,35 @@ void move(char direct)
     head->next->pre = tmp;
     tmp->next = head->next;
     head->next = tmp;
-    printf("x=%d y=%d\n", head->next->x, head->next->y); 
     LCDfillrect(head->next->x, head->next->y, BLOCK_SIZE, BLOCK_SIZE, BLACK);
     LCDdisplay();
 }
 
 static char MOVE[10] = {LEFT, LEFT, DOWN, DOWN, DOWN, RIGHT, RIGHT, UP, UP, RIGHT};
 //static char MOVE[10] = {LEFT, LEFT, LEFT, LEFT, LEFT, LEFT, LEFT, LEFT, LEFT,LEFT};
+
+static int get_char() 
+{
+    fd_set rfds;
+    struct timeval tv;  
+    int ch = -1;   
+    FD_ZERO(&rfds);  
+    FD_SET(0, &rfds);  
+    tv.tv_sec = 0;  
+    tv.tv_usec = 10;     
+    
+    while (1)
+    {
+        if (select(1, &rfds, NULL, NULL, &tv) > 0)  
+        {   
+            ch = getchar();
+            printf("input= %d", ch);
+              
+        } 
+    }
+    
+    return ch; 
+}
 
 int main (void)
 {
@@ -108,15 +132,21 @@ int main (void)
         printf("wiringPi-Error\n");
         exit(1);
     }
+    system(STTY_US TTY_PATH); 
 
     LCDInit(0, 1, 2, 3, 4, 45);
     LCDclear();
 
     init_snake(40, 10);
     LCDdisplay();
-    for (; step < 10; step++)
+
+    while(true)
+    {
+
+    }
+    /*for (; step < 10; step++)
     {
         move(MOVE[step]);
         delay(200);
-    }
+    }*/
 }
