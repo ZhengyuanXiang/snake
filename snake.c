@@ -12,8 +12,8 @@ enum Direction
 {
     UP = 0,
     LEFT,
-    DOWN,
-    UP
+    RIGHT,
+    Down
 };
 
 typedef struct tagBody
