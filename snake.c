@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ncurses.h>
 
 #include "PCD8544.h"
 
@@ -104,7 +105,8 @@ static char MOVE[10] = {LEFT, LEFT, DOWN, DOWN, DOWN, RIGHT, RIGHT, UP, UP, RIGH
 static int get_char() 
 {
     fd_set rfds;
-    struct timeval tv;  
+    struct timeval tv; 
+
     int ch = -1;   
     FD_ZERO(&rfds);  
     FD_SET(0, &rfds);  
@@ -140,7 +142,13 @@ int main (void)
     init_snake(40, 10);
     LCDdisplay();
 
+    initscr();
+    cbreak();
+    noecho(); 
+    keypad(stdscr, TRUE); 
+
     get_char();
+    endwin();
     /*for (; step < 10; step++)
     {
         move(MOVE[step]);
