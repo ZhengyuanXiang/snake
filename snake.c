@@ -117,7 +117,7 @@ static int get_char()
         {   
             ch = getchar();
             printf("input= %d", ch);
-              
+
         } 
     }
     
@@ -140,10 +140,7 @@ int main (void)
     init_snake(40, 10);
     LCDdisplay();
 
-    while(true)
-    {
-
-    }
+    get_char();
     /*for (; step < 10; step++)
     {
         move(MOVE[step]);
