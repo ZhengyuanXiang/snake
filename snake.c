@@ -1,16 +1,61 @@
-#include "PCD8544.h"
 #include <wiringPi.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int _din = 1;
-int _sclk = 0;
-int _dc = 2;
-int _rst = 4;
-int _cs = 3;
+#include "PCD8544.h"
 
-int contrast = 45; 
+#define INIT_LEN 3
+
+enum Direction
+{
+    UP = 0,
+    LEFT,
+    DOWN,
+    UP
+};
+
+typedef struct tagBody
+{
+    uint8_t x;
+    uint8_t y;
+    uint8_t dir;
+    uint8_t cnt;
+    struct tagBody *pre;
+    struct tagBody *next;
+}Body;
+
+static Body *head;
+
+void init_snake(uint8_t PosX, uint8_t PosY, uint8_t BlockSize)
+{
+    Body *tmp;
+
+    head = (Body *)malloc(sizeof(Body));
+    memset((void *)head, 0, sizeof(Body));
+    head->next = head;
+    head->pre  = head;
+    tmp->dir  = LEFT;
+
+    for (int i = 0; i < INIT_LEN; i++)
+    {
+        tmp = (Body *)malloc(sizeof(Body));
+        tmp->x = PosX + (i * BlockSize);
+        tmp->y = PosY;
+        tmp->next = head->next;
+        tmp->pre  = head;
+        head->next->pre = tmp;
+        head->next = tmp;
+        head->cnt++;
+    }
+
+    for (tmp = head->next; tmp != head; tmp = tmp->next)
+    {
+        LCDfillrect(tmp->x, tmp->y, BlockSize, BlockSize, BLACK);
+    }
+}
+
 
 int main (void)
 {
@@ -20,10 +65,11 @@ int main (void)
         exit(1);
     }
 
-    LCDInit(_sclk, _din, _dc, _cs, _rst, contrast);
+    LCDInit(0, 1, 2, 3, 4, 45);
     LCDclear();
 
-    LCDfillrect(100, 100, 2, 2, BLACK);
+    init_snake(10, 10, 2);
     LCDdisplay();
+
     delay(111000);
 }
